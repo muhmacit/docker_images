@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		libsqlite3-0 \
 		libssl1.1 \
 		netbase \
-		git \	
+		git \
+		gcc \	
 		wget \
 	&& rm -rf /var/lib/apt/lists/*
 
