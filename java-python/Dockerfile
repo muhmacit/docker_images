@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		libreadline7 \
 		libsqlite3-0 \
 		libssl1.1 \
-		netbase \	
+		netbase \
+		git \	
 		wget \
 	&& rm -rf /var/lib/apt/lists/*
 
