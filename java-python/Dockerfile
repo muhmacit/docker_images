@@ -1,20 +1,11 @@
-FROM debian:stretch-slim
+FROM buildpack-deps:stretch
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		bzip2 \
 		unzip \
 		xz-utils \
-		ca-certificates \
-		libexpat1 \
-		libffi6 \
-		libgdbm3 \
-		libreadline7 \
-		libsqlite3-0 \
-		libssl1.1 \
-		netbase \
-		git \
-		gcc \	
-		wget \
+		tcl \
+		tk \
 	&& rm -rf /var/lib/apt/lists/*
 
 #JDK Default to UTF-8 file.encoding
@@ -80,32 +71,14 @@ RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure
 ENV PATH /usr/local/bin:$PATH
 
 ENV GPG_KEY 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-
-#PYTON
 ENV PYTHON_VERSION 3.6.4
+
 RUN set -ex \
-	&& buildDeps=" \
+	&& buildDeps=' \
 		dpkg-dev \
-		gcc \
-		libbz2-dev \
-		libc6-dev \
-		libexpat1-dev \
-		libffi-dev \
-		libgdbm-dev \
-		liblzma-dev \
-		libncursesw5-dev \
-		libreadline-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		make \
 		tcl-dev \
 		tk-dev \
-		wget \
-		xz-utils \
-		zlib1g-dev \
-# as of Stretch, "gpg" is no longer included by default
-		$(command -v gpg > /dev/null || echo 'gnupg dirmngr') \
-	" \
+	' \
 	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	\
 	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
@@ -141,7 +114,6 @@ RUN set -ex \
 		\) -exec rm -rf '{}' + \
 	&& rm -rf /usr/src/python
 
-
 # make some useful symlinks that are expected to exist
 RUN cd /usr/local/bin \
 	&& ln -s idle3 idle \
@@ -149,20 +121,12 @@ RUN cd /usr/local/bin \
 	&& ln -s python3 python \
 	&& ln -s python3-config python-config
 
-
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 10.0.1
 
-
 RUN set -ex; \
 	\
-	apt-get update; \
-	apt-get install -y --no-install-recommends wget; \
-	rm -rf /var/lib/apt/lists/*; \
-	\
 	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
-	\
-	apt-get purge -y --auto-remove wget; \
 	\
 	python get-pip.py \
 		--disable-pip-version-check \
@@ -177,4 +141,4 @@ RUN set -ex; \
 			-o \
 			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
 		\) -exec rm -rf '{}' +; \
-	rm -f get-pip.py
+rm -f get-pip.py
